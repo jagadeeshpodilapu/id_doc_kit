@@ -76,7 +76,6 @@ class AadhaarValidator extends BaseIdValidator {
     [7,0,4,6,9,1,3,2,5,8],
   ];
 
-  static const List<int> _inv = [0,4,3,2,1,5,6,7,8,9];
 
   bool _verhoeffValidate(String num) {
     var c = 0;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../id_doc_kit.dart';
 
-class IdTextField extends StatelessWidget {
+class IdTextField extends StatefulWidget {
   final IdDocumentType type;
   final TextEditingController? controller;
   final String? label;
@@ -17,25 +17,44 @@ class IdTextField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final _controller = controller ?? TextEditingController();
+  State<IdTextField> createState() => _IdTextFieldState();
+}
 
+class _IdTextFieldState extends State<IdTextField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.clear();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return TextFormField(
       controller: _controller,
       decoration: InputDecoration(
-        labelText: label ?? type.name.toUpperCase(),
+        labelText: widget.label ?? widget.type.name.toUpperCase(),
       ),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         final text = value ?? '';
         if (text.isEmpty) return 'Required';
 
-        final result =
-        IdValidator.instance.validate(type: type, value: text);
-        onValidationChanged?.call(result.isValid);
+        final result = IdValidator.instance.validate(
+          type: widget.type,
+          value: text,
+        );
+        widget.onValidationChanged?.call(result.isValid);
 
         if (!result.isValid) {
-          return result.errorMessage ?? 'Invalid ${type.name}';
+          return result.errorMessage ?? 'Invalid ${widget.type.name}';
         }
         return null;
       },

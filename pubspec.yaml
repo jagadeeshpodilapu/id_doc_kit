@@ -1,8 +1,12 @@
 name: id_doc_kit
-description: "A structured toolkit for validating Indian ID documents (Aadhaar, PAN, Driving License)
-  with rich result models and ready-to-use Flutter form field widgets."
+description: >
+  A structured toolkit for validating Indian ID documents (Aadhaar, PAN, Driving License)
+  with rich result models and ready-to-use Flutter form field widgets.
 version: 0.0.1
 homepage: "https://github.com/jagadeeshpodilapu/id_doc_kit.git"
+repository: "https://github.com/jagadeeshpodilapu/id_doc_kit.git"
+issue_tracker: "https://github.com/jagadeeshpodilapu/id_doc_kit/issues"
+
 
 
 environment:
