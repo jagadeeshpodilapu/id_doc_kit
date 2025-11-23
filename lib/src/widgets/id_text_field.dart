@@ -51,7 +51,10 @@ class _IdTextFieldState extends State<IdTextField> {
           type: widget.type,
           value: text,
         );
-        widget.onValidationChanged?.call(result.isValid);
+        // Defer callback to avoid setState during build
+        Future.microtask(() {
+          widget.onValidationChanged?.call(result.isValid);
+        });
 
         if (!result.isValid) {
           return result.errorMessage ?? 'Invalid ${widget.type.name}';
