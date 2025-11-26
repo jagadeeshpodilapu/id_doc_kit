@@ -27,3 +27,4 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+test/id_do_kit_test.dart
