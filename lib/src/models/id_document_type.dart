@@ -1,5 +1,1 @@
-enum IdDocumentType {
-  aadhaar,
-  pan,
-  drivingLicense,
-}
+enum IdDocumentType { aadhaar, pan, drivingLicense, gstin }

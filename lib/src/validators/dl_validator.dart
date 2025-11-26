@@ -22,7 +22,7 @@ class DrivingLicenseValidator extends BaseIdValidator {
         isValid: false,
         errorCode: 'INVALID_FORMAT',
         errorMessage:
-        'Driving License must be 2 letters, 2 digits, and 11 digits (basic format).',
+            'Driving License must be 2 letters, 2 digits, and 11 digits (basic format).',
       );
     }
 

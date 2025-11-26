@@ -5,8 +5,8 @@ class IdDocumentResult {
   final String rawValue;
   final bool isValid;
   final String? normalizedValue;
-  final String? errorCode;      // e.g. "INVALID_FORMAT", "INVALID_CHECKSUM"
-  final String? errorMessage;   // human friendly
+  final String? errorCode; // e.g. "INVALID_FORMAT", "INVALID_CHECKSUM"
+  final String? errorMessage; // human friendly
 
   const IdDocumentResult({
     required this.type,
