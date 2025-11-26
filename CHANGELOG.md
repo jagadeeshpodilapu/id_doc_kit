@@ -1,4 +1,4 @@
-## 0.0.3
+## 0.0.4
 
 ### ✨ New Features
 - Added **GSTIN validation** (basic structure + state code check).
