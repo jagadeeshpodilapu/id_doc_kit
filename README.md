@@ -3,16 +3,20 @@
 A lightweight, production-ready Flutter/Dart toolkit for validating  
 **Indian ID documents** with structured results and flexible form field support.
 
-Perfect for **KYC, onboarding, fintech, verification, and identity apps**.
+Perfect for **KYC, onboarding, fintech, business verification, and identity apps**.
 
 ---
 
 ## ✅ Supported Documents
 
-- ✅ Aadhaar (with Verhoeff checksum)
-- ✅ PAN
-- ✅ Driving License (basic format)
-- ✅ GSTIN (basic structure + state code)
+- ✅ **Aadhaar** (with Verhoeff checksum)
+- ✅ **PAN**
+- ✅ **Driving License** (basic format)
+- ✅ **GSTIN** (basic structure + state code)
+- ✅ **Voter ID (EPIC)** — 2–3 letters + 7 digits
+- ✅ **Passport (Indian)** — 1 letter + 7 digits
+
+This makes `id_doc_kit` one of the most complete, developer-friendly **Indian document validation** packages on pub.dev.
 
 ---
 
@@ -22,19 +26,21 @@ Perfect for **KYC, onboarding, fintech, verification, and identity apps**.
   - `isValid`
   - `normalizedValue`
   - `errorCode` (e.g. `INVALID_FORMAT`, `INVALID_LENGTH`, `INVALID_CHECKSUM`)
-  - `errorMessage` (user-friendly)
+  - `errorMessage` (human-friendly)
 
 - ✅ **Single unified validator API**
-  - `IdValidator.instance.validate(...)`
-  - `IdValidator.instance.validateAuto(...)`
+  - `IdValidator.instance.validate(type: ..., value: ...)`
+  - `IdValidator.instance.validateAuto(value)` *(optional)*
 
 - ✅ **Three flexible ways to handle input fields**
   - `idFormFieldValidator` → logic only
-  - `IdTextField` → quick drop-in widget
-  - `IdField` → fully custom UI using builder
+  - `IdTextField` → ready-to-use widget
+  - `IdField` → fully custom UI via builder
 
-- ✅ **Null-safe & production-ready**
-- ✅ **Works on Android, iOS & Web**
+- 🔄 **Consistent behavior** across Aadhaar, PAN, DL, GSTIN, Voter ID, Passport
+- 🚫 **No external APIs** (offline, fast, privacy-safe)
+- 🌐 **Works on Android, iOS, Web**
+- 🧪 **Well-tested & null-safe**
 
 ---
 
@@ -44,4 +50,4 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  id_doc_kit: ^0.0.3
+  id_doc_kit: ^0.0.4

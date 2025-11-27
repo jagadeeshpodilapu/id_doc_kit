@@ -148,6 +148,12 @@ class _ExampleHomeState extends State<ExampleHome> {
                 },
               ),
 
+              const SizedBox(height: 8),
+
+              IdTextField(type: IdDocumentType.voterId),
+              const SizedBox(height: 8),
+              IdTextField(type: IdDocumentType.passport),
+
               const SizedBox(height: 32),
 
               // ------------------------------------------------------------

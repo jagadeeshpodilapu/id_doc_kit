@@ -4,6 +4,8 @@ import 'aadhaar_validator.dart';
 import 'pan_validator.dart';
 import 'dl_validator.dart';
 import 'gstin_validator.dart';
+import 'voter_id_validator.dart';
+import 'passport_validator.dart';
 
 class IdValidator {
   IdValidator._internal();
@@ -14,6 +16,8 @@ class IdValidator {
   final _pan = PanValidator();
   final _dl = DrivingLicenseValidator();
   final _gstin = GstinValidator();
+  final _voterId = VoterIdValidator();
+  final _passport = PassportValidator();
 
   IdDocumentResult validate({
     required IdDocumentType type,
@@ -28,6 +32,10 @@ class IdValidator {
         return _dl.validate(value);
       case IdDocumentType.gstin:
         return _gstin.validate(value);
+      case IdDocumentType.voterId:
+        return _voterId.validate(value);
+      case IdDocumentType.passport:
+        return _passport.validate(value);
     }
   }
 

@@ -197,6 +197,8 @@ class _IdTextFieldState extends State<IdTextField> {
     IdDocumentType.pan => 'PAN Number',
     IdDocumentType.drivingLicense => 'Driving License Number',
     IdDocumentType.gstin => 'GSTIN',
+    IdDocumentType.voterId => 'Voter ID',
+    IdDocumentType.passport => 'Passport Number',
   };
 
   TextInputType get _keyboardTypeForDocument => switch (widget.type) {
