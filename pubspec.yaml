@@ -30,6 +30,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-
-flutter:
-# No assets or fonts required for this package as of now.
