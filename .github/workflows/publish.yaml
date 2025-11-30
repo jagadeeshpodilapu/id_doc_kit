@@ -3,9 +3,9 @@ name: CI & Publish to pub.dev
 on:
   push:
     branches:
-      - main                         # ✅ Run on pushes to main
+      - main                         # CI on main
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"      # ✅ Also run on version tags like v1.2.3
+      - "v[0-9]+.[0-9]+.[0-9]+"      # CI + publish on version tags
 
 jobs:
   ci_and_publish:
@@ -15,20 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      # ✅ Setup Flutter SDK instead of bare Dart
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: stable
+          channel: stable
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Analyze
-        run: dart analyze
+        run: flutter analyze
 
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
 
-      # 🔐 Only set up credentials when this is a tag push (for publish)
+      # 🔐 Only needed when it's a tag push (for publishing)
       - name: Setup pub.dev credentials
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -37,7 +38,7 @@ jobs:
         env:
           PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
 
-      # 📦 Only publish when it's a version tag like v1.2.3
+      # 📦 Only publish when you push a version tag like v1.2.3
       - name: Publish to pub.dev
         if: startsWith(github.ref, 'refs/tags/v')
-        run: dart pub publish --force
+        run: flutter pub publish --force
