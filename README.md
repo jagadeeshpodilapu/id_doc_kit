@@ -7,6 +7,14 @@ Perfect for **KYC, onboarding, fintech, business verification, and identity apps
 
 ---
 
+## 🚀 Live Demo
+
+Try it out in your browser! 👉 **[View Live Demo](https://jagadeeshpodilapu.github.io/id_doc_kit/)**
+
+The demo showcases all supported document types with real-time validation feedback.
+
+---
+
 ## ✅ Supported Documents
 
 - ✅ **Aadhaar** (with Verhoeff checksum)
@@ -23,16 +31,19 @@ This makes `id_doc_kit` one of the most complete, developer-friendly **Indian do
 ## ✨ Key Features
 
 - ✅ **Structured validation results**
+
   - `isValid`
   - `normalizedValue`
   - `errorCode` (e.g. `INVALID_FORMAT`, `INVALID_LENGTH`, `INVALID_CHECKSUM`)
   - `errorMessage` (human-friendly)
 
 - ✅ **Single unified validator API**
+
   - `IdValidator.instance.validate(type: ..., value: ...)`
-  - `IdValidator.instance.validateAuto(value)` *(optional)*
+  - `IdValidator.instance.validateAuto(value)` _(optional)_
 
 - ✅ **Three flexible ways to handle input fields**
+
   - `idFormFieldValidator` → logic only
   - `IdTextField` → ready-to-use widget
   - `IdField` → fully custom UI via builder
@@ -51,3 +62,4 @@ Add this to your `pubspec.yaml`:
 ```yaml
 dependencies:
   id_doc_kit: ^0.0.4
+```
