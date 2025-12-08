@@ -165,10 +165,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                         requiredMessage: 'GSTIN is required',
                       ),
                       onChanged: (value) {
-                        final result = IdValidator.instance.validate(
-                          type: IdDocumentType.gstin,
-                          value: value,
-                        );
+
                       },
                     ),
                   ],
