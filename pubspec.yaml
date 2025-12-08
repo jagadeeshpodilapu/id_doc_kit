@@ -2,7 +2,7 @@ name: id_doc_kit
 description: >
   Validate Indian ID documents (Aadhaar, PAN, GSTIN, Driving License, Voter ID, Passport) with structured results, checksum verification & flexible form widgets. Offline & privacy-safe.
 
-version: 0.0.5
+version: 0.0.6
 
 homepage: https://github.com/jagadeeshpodilapu/id_doc_kit
 repository: https://github.com/jagadeeshpodilapu/id_doc_kit

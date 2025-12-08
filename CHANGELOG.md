@@ -1,4 +1,4 @@
-## 0.0.5 — KYC Essentials
+## 0.0.6 — KYC Essentials
 
 - ✅ Added PIN code validator (India)
 - ✅ Added Phone number validator (India)

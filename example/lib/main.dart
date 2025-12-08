@@ -34,11 +34,6 @@ class ExampleHome extends StatefulWidget {
 class _ExampleHomeState extends State<ExampleHome> {
   final _formKey = GlobalKey<FormState>();
   bool _panValid = false;
-  bool _gstinValid = false;
-  bool _aadhaarValid = false;
-  bool _voterIdValid = false;
-  bool _passportValid = false;
-  bool _drivingLicenseValid = false;
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +169,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                           type: IdDocumentType.gstin,
                           value: value,
                         );
-                        setState(() => _gstinValid = result.isValid);
                       },
                     ),
                   ],
@@ -200,7 +194,6 @@ class _ExampleHomeState extends State<ExampleHome> {
 
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       if (mounted) {
-                        setState(() => _aadhaarValid = isValid);
                       }
                     });
 
@@ -264,7 +257,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                         fillColor: colorScheme.surface,
                       ),
                       onValidationChanged: (isValid) {
-                        setState(() => _voterIdValid = isValid);
                       },
                     ),
                     const SizedBox(height: 12),
@@ -280,7 +272,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                         fillColor: colorScheme.surface,
                       ),
                       onValidationChanged: (isValid) {
-                        setState(() => _passportValid = isValid);
                       },
                     ),
                     const SizedBox(height: 12),
@@ -296,7 +287,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                         fillColor: colorScheme.surface,
                       ),
                       onValidationChanged: (isValid) {
-                        setState(() => _drivingLicenseValid = isValid);
                       },
                     ),
                   ],
