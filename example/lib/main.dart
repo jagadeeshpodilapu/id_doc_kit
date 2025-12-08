@@ -281,6 +281,48 @@ class _ExampleHomeState extends State<ExampleHome> {
                       ),
                       onValidationChanged: (isValid) {},
                     ),
+                    const SizedBox(height: 12),
+                    IdTextField(
+                      type: IdDocumentType.pinCode,
+                      decoration: InputDecoration(
+                        labelText: 'Pin Code',
+                        prefixIcon: const Icon(Icons.pin_drop_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                      ),
+                      onValidationChanged: (isValid) {},
+                    ),
+                    const SizedBox(height: 12),
+                    IdTextField(
+                      type: IdDocumentType.phone,
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number',
+                        prefixIcon: const Icon(Icons.mobile_friendly),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                      ),
+                      onValidationChanged: (isValid) {},
+                    ),
+                    const SizedBox(height: 12),
+                    IdTextField(
+                      type: IdDocumentType.email,
+                      decoration: InputDecoration(
+                        labelText: 'Email Address',
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                      ),
+                      onValidationChanged: (isValid) {},
+                    ),
                   ],
                 ),
               ),
