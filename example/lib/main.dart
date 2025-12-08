@@ -164,13 +164,12 @@ class _ExampleHomeState extends State<ExampleHome> {
                         IdDocumentType.gstin,
                         requiredMessage: 'GSTIN is required',
                       ),
-                      onChanged: (value) {
-
-                      },
+                      onChanged: (value) {},
                     ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 16),
 
               // Section 3: Advanced Custom UI
@@ -190,8 +189,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                         : null;
 
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (mounted) {
-                      }
+                      if (mounted) {}
                     });
 
                     return Column(
@@ -211,9 +209,9 @@ class _ExampleHomeState extends State<ExampleHome> {
                             fillColor: colorScheme.surface,
                             suffixIcon: isValid
                                 ? Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade600,
-                            )
+                                    Icons.check_circle,
+                                    color: Colors.green.shade600,
+                                  )
                                 : null,
                             errorText: errorText,
                           ),
@@ -253,8 +251,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {
-                      },
+                      onValidationChanged: (isValid) {},
                     ),
                     const SizedBox(height: 12),
                     IdTextField(
@@ -268,8 +265,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {
-                      },
+                      onValidationChanged: (isValid) {},
                     ),
                     const SizedBox(height: 12),
                     IdTextField(
@@ -283,8 +279,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {
-                      },
+                      onValidationChanged: (isValid) {},
                     ),
                   ],
                 ),
@@ -337,13 +332,13 @@ class _ExampleHomeState extends State<ExampleHome> {
   }
 
   Widget _buildSectionCard(
-      BuildContext context, {
-        required String title,
-        required String subtitle,
-        required IconData icon,
-        required Color iconColor,
-        required Widget child,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color iconColor,
+    required Widget child,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -394,10 +389,10 @@ class _ExampleHomeState extends State<ExampleHome> {
   }
 
   Widget _buildValidationStatus(
-      BuildContext context, {
-        required bool isValid,
-        required String message,
-      }) {
+    BuildContext context, {
+    required bool isValid,
+    required String message,
+  }) {
     return Row(
       children: [
         Icon(
