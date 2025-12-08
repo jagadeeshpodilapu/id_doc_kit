@@ -61,7 +61,7 @@ class _ExampleHomeState extends State<ExampleHome> {
             end: Alignment.bottomCenter,
             colors: [
               colorScheme.surface,
-              colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -95,8 +95,8 @@ class _ExampleHomeState extends State<ExampleHome> {
                       Text(
                         'Explore different ways to validate Indian ID documents',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onPrimaryContainer.withOpacity(
-                            0.8,
+                          color: colorScheme.onPrimaryContainer.withValues(
+                            alpha: 0.8,
                           ),
                         ),
                         textAlign: TextAlign.center,
@@ -105,7 +105,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
 
               // Section 1: Quick Integration
@@ -143,7 +142,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
 
               // Section 2: Custom Field with Validator
@@ -182,7 +180,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 16),
 
               // Section 3: Advanced Custom UI
@@ -224,9 +221,9 @@ class _ExampleHomeState extends State<ExampleHome> {
                             fillColor: colorScheme.surface,
                             suffixIcon: isValid
                                 ? Icon(
-                                    Icons.check_circle,
-                                    color: Colors.green.shade600,
-                                  )
+                              Icons.check_circle,
+                              color: Colors.green.shade600,
+                            )
                                 : null,
                             errorText: errorText,
                           ),
@@ -244,7 +241,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   },
                 ),
               ),
-
               const SizedBox(height: 16),
 
               // Section 4: Other Documents
@@ -306,7 +302,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
 
               // Submit Button
@@ -346,7 +341,6 @@ class _ExampleHomeState extends State<ExampleHome> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
             ],
           ),
@@ -356,13 +350,13 @@ class _ExampleHomeState extends State<ExampleHome> {
   }
 
   Widget _buildSectionCard(
-    BuildContext context, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color iconColor,
-    required Widget child,
-  }) {
+      BuildContext context, {
+        required String title,
+        required String subtitle,
+        required IconData icon,
+        required Color iconColor,
+        required Widget child,
+      }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -377,7 +371,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
+                    color: iconColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, color: iconColor, size: 24),
@@ -396,7 +390,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                       Text(
                         subtitle,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.6),
+                          color: colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                     ],
@@ -413,10 +407,10 @@ class _ExampleHomeState extends State<ExampleHome> {
   }
 
   Widget _buildValidationStatus(
-    BuildContext context, {
-    required bool isValid,
-    required String message,
-  }) {
+      BuildContext context, {
+        required bool isValid,
+        required String message,
+      }) {
     return Row(
       children: [
         Icon(
