@@ -1,9 +1,12 @@
 import '../models/id_document_type.dart';
 import '../models/id_document_result.dart';
 import 'aadhaar_validator.dart';
+import 'email_validator.dart';
 import 'pan_validator.dart';
 import 'dl_validator.dart';
 import 'gstin_validator.dart';
+import 'phone_validator.dart';
+import 'pincode_validator.dart';
 import 'voter_id_validator.dart';
 import 'passport_validator.dart';
 
@@ -18,6 +21,9 @@ class IdValidator {
   final _gstin = GstinValidator();
   final _voterId = VoterIdValidator();
   final _passport = PassportValidator();
+  final _pin = PinCodeValidator();
+  final _phone = PhoneValidator();
+  final _email = EmailValidator();
 
   IdDocumentResult validate({
     required IdDocumentType type,
@@ -36,6 +42,12 @@ class IdValidator {
         return _voterId.validate(value);
       case IdDocumentType.passport:
         return _passport.validate(value);
+      case IdDocumentType.pinCode:
+        return _pin.validate(value);
+      case IdDocumentType.phone:
+        return _phone.validate(value);
+      case IdDocumentType.email:
+        return _email.validate(value);
     }
   }
 

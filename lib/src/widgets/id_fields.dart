@@ -199,10 +199,15 @@ class _IdTextFieldState extends State<IdTextField> {
     IdDocumentType.gstin => 'GSTIN',
     IdDocumentType.voterId => 'Voter ID',
     IdDocumentType.passport => 'Passport Number',
+    IdDocumentType.pinCode => 'PIN Code',
+    IdDocumentType.email => 'Email Address',
+    IdDocumentType.phone => 'Phone Number',
   };
 
   TextInputType get _keyboardTypeForDocument => switch (widget.type) {
     IdDocumentType.aadhaar => TextInputType.number,
+    IdDocumentType.phone => TextInputType.number,
+    IdDocumentType.pinCode => TextInputType.number,
     _ => TextInputType.text,
   };
 }

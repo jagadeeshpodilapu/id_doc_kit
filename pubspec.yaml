@@ -1,21 +1,18 @@
 name: id_doc_kit
 description: >
-  A lightweight, production-ready toolkit for validating Indian ID documents
-  (Aadhaar, PAN, Driving License, GSTIN, Voter ID, Passport) with structured 
-  result models and ready-to-use Flutter form field widgets. Ideal for KYC, 
-  onboarding, and fintech apps.
+  Validate Indian ID documents (Aadhaar, PAN, GSTIN, Driving License, Voter ID, Passport) with structured results, checksum verification & flexible form widgets. Offline & privacy-safe.
 
-version: 0.0.4
+version: 0.0.5
 
 homepage: https://github.com/jagadeeshpodilapu/id_doc_kit
 repository: https://github.com/jagadeeshpodilapu/id_doc_kit
 issue_tracker: https://github.com/jagadeeshpodilapu/id_doc_kit/issues
 
 topics:
-  - validation
   - india
   - kyc
   - aadhaar
+  - pan
   - gstin
 
 environment:

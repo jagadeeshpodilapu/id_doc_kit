@@ -1,3 +1,12 @@
+## 0.0.5 — KYC Essentials
+
+- ✅ Added PIN code validator (India)
+- ✅ Added Phone number validator (India)
+- ✅ Added Email validator
+- ✅ Added tests for new validators
+- ✅ README updated with examples and demo link
+
+
 ## 0.0.4
 
 ### ✨ New Features
