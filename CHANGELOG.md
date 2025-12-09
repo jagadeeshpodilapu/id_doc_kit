@@ -1,15 +1,19 @@
 ## 0.0.8 - Dl improvements
 
 ### Added
-- Driving License: state-aware validator (`DrivingLicenseStateValidator`) with per-state checks and flexible normalization.
-- Driving License: permissive fallback format now validates the parsed year and serial before accepting.
+- `IdFormatter` — UI-friendly formatting helpers for PAN, Aadhaar, GSTIN, Driving License, Voter ID, Passport, PIN, Phone, Email.
+- `autoFormat` option (default `true`) for `IdTextField` and `IdField` to format user input live.
+- `idFormFieldValidator(..., autoFormat: true)` option to format before validation.
+
 
 ### Changed
-- `id_doc_kit_ui_extension` updated to include user-friendly messages for all id's.
-- Tests: Added comprehensive unit tests for driving license validation (comprehensive + fallback + strict legacy checks).
+- `IdTextField` / `IdField` updated to apply formatting + validation consistently (UI shows formatted text and friendly messages).
+- README updated with formatter and autoFormat usage notes.
+- Tests added for formatter behavior and key DL cases.
 
 ### Notes
-- Driving License changes improve accuracy and reduce false positives. For high-assurance KYC, enable strict mode or require `requiredState` in server-side validation.
+- `autoFormat` is opt-out for developers who prefer raw input.
+- For server-side validation use `DrivingLicenseStateValidator.validate` or call `IdFormatter.format(...)/IdValidator.validate(...)` on the server normalized data.
 
 ## 0.0.6 — KYC Essentials
 

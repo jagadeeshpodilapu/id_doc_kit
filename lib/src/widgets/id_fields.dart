@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../models/id_document_type.dart';
 import '../models/id_document_result.dart';
+import '../utility/id_doc_kit_formatter.dart';
 import '../validators/id_validator.dart';
 
 /// Builds a custom error string based on the validation result.
@@ -15,6 +16,7 @@ FormFieldValidator<String> idFormFieldValidator(
   bool allowEmpty = false,
   bool autoTrim = true,
   IdErrorBuilder? errorBuilder,
+  bool autoFormat = true,
 }) {
   return (String? value) {
     var text = value ?? '';
@@ -28,7 +30,10 @@ FormFieldValidator<String> idFormFieldValidator(
       return requiredMessage ?? 'Required';
     }
 
-    final result = IdValidator.instance.validate(type: type, value: text);
+    // Optionally format the value before validating
+    final toValidate = autoFormat ? IdFormatter.format(type, text) : text;
+
+    final result = IdValidator.instance.validate(type: type, value: toValidate);
 
     if (!result.isValid) {
       if (errorBuilder != null) {
@@ -56,7 +61,7 @@ class IdTextField extends StatefulWidget {
   final int? maxLength;
   final int? maxLines;
   final bool obscureText;
-
+  final bool autoFormat;
   // Validation behavior
   final AutovalidateMode autovalidateMode;
   final String? requiredMessage;
@@ -90,6 +95,7 @@ class IdTextField extends StatefulWidget {
     this.onChanged,
     this.onValidationChanged,
     this.onSaved,
+    this.autoFormat = true,
   });
 
   @override
@@ -100,6 +106,7 @@ class _IdTextFieldState extends State<IdTextField> {
   late TextEditingController _controller;
   late FormFieldValidator<String> _validatorFn;
   bool? _lastValidState;
+  bool _isApplyingFormat = false;
 
   bool get _ownsController => widget.controller == null;
 
@@ -108,6 +115,17 @@ class _IdTextFieldState extends State<IdTextField> {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
     _validatorFn = _createValidator();
+
+    // If there's initial text and autoFormat is enabled, format it once
+    if (widget.autoFormat && _controller.text.isNotEmpty) {
+      final formatted = IdFormatter.format(widget.type, _controller.text);
+      _controller.value = _controller.value.copyWith(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
+
+    _controller.addListener(_onControllerChanged);
   }
 
   @override
@@ -120,6 +138,7 @@ class _IdTextFieldState extends State<IdTextField> {
         _controller.dispose();
       }
       _controller = widget.controller ?? TextEditingController();
+      _controller.addListener(_onControllerChanged);
     }
 
     // Recreate validator if validation parameters changed
@@ -127,7 +146,8 @@ class _IdTextFieldState extends State<IdTextField> {
         widget.requiredMessage != oldWidget.requiredMessage ||
         widget.allowEmpty != oldWidget.allowEmpty ||
         widget.autoTrim != oldWidget.autoTrim ||
-        widget.errorBuilder != oldWidget.errorBuilder) {
+        widget.errorBuilder != oldWidget.errorBuilder ||
+        widget.autoFormat != oldWidget.autoFormat) {
       _validatorFn = _createValidator();
       // Reset validation state since rules changed
       _lastValidState = null;
@@ -136,6 +156,7 @@ class _IdTextFieldState extends State<IdTextField> {
 
   @override
   void dispose() {
+    _controller.removeListener(_onControllerChanged);
     if (_ownsController) _controller.dispose();
     super.dispose();
   }
@@ -147,22 +168,72 @@ class _IdTextFieldState extends State<IdTextField> {
       allowEmpty: widget.allowEmpty,
       autoTrim: widget.autoTrim,
       errorBuilder: widget.errorBuilder,
+      autoFormat: widget.autoFormat,
     );
   }
 
-  void _handleChanged(String value) {
-    widget.onChanged?.call(value);
-    _notifyValidationChangeIfNeeded(value);
+  void _onControllerChanged() {
+    if (_isApplyingFormat) return;
+
+    final raw = _controller.text;
+    final selection = _controller.selection;
+
+    if (widget.autoFormat) {
+      final formatted = IdFormatter.format(widget.type, raw);
+      if (formatted != raw) {
+        // apply formatting while preserving cursor position
+        final baseOffset = selection.baseOffset;
+        final isAtEnd = baseOffset >= raw.length;
+        final newOffset = isAtEnd
+            ? formatted.length
+            : _preserveOffset(raw, formatted, baseOffset);
+
+        _isApplyingFormat = true;
+        _controller.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(
+            offset: newOffset.clamp(0, formatted.length),
+          ),
+        );
+        _isApplyingFormat = false;
+      }
+      _notifyChangeAndValidation(_controller.text);
+    } else {
+      _notifyChangeAndValidation(raw);
+    }
   }
 
-  void _notifyValidationChangeIfNeeded(String value) {
-    if (widget.onValidationChanged == null) return;
+  void _handleChanged(String value) {
+    // kept for backward compatibility if someone uses onChanged from TextFormField
+    // but internal change handling will call onChanged via _notifyChangeAndValidation
+  }
 
+  void _notifyChangeAndValidation(String value) {
+    // Call onChanged with the (possibly formatted) value
+    widget.onChanged?.call(value);
+
+    // Compute validation result using validator function
     final isValid = _validatorFn(value) == null;
+
     if (_lastValidState != isValid) {
       _lastValidState = isValid;
-      widget.onValidationChanged!(isValid);
+      widget.onValidationChanged?.call(isValid);
     }
+  }
+
+  int _preserveOffset(String oldText, String newText, int oldOffset) {
+    // Heuristic: preserve count of alphanumeric chars before cursor
+    final oldUpTo = oldText.substring(0, oldOffset.clamp(0, oldText.length));
+    final alnumCount = oldUpTo.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').length;
+
+    var seen = 0;
+    for (var i = 0; i < newText.length; i++) {
+      if (RegExp(r'[A-Za-z0-9]').hasMatch(newText[i])) seen++;
+      if (seen >= alnumCount) {
+        return i + 1;
+      }
+    }
+    return newText.length;
   }
 
   @override
@@ -180,7 +251,8 @@ class _IdTextFieldState extends State<IdTextField> {
       obscureText: widget.obscureText,
       autovalidateMode: widget.autovalidateMode,
       validator: _validatorFn,
-      onChanged: _handleChanged,
+      onChanged:
+          _handleChanged, // kept but actual change handling via controller listener
       onSaved: widget.onSaved,
     );
   }
@@ -232,6 +304,9 @@ class IdField extends StatefulWidget {
   final IdErrorBuilder? errorBuilder;
   final String? initialValue;
 
+  // NEW: autoFormat toggle
+  final bool autoFormat;
+
   const IdField({
     super.key,
     required this.type,
@@ -242,6 +317,7 @@ class IdField extends StatefulWidget {
     this.autoTrim = true,
     this.errorBuilder,
     this.initialValue,
+    this.autoFormat = true,
   });
 
   @override
@@ -251,6 +327,7 @@ class IdField extends StatefulWidget {
 class _IdFieldState extends State<IdField> {
   late TextEditingController _controller;
   IdDocumentResult? _lastResult;
+  bool _isApplyingFormat = false;
 
   bool get _ownsController => widget.controller == null;
 
@@ -286,7 +363,9 @@ class _IdFieldState extends State<IdField> {
     if (widget.type != oldWidget.type ||
         widget.requiredMessage != oldWidget.requiredMessage ||
         widget.allowEmpty != oldWidget.allowEmpty ||
-        widget.autoTrim != oldWidget.autoTrim) {
+        widget.autoTrim != oldWidget.autoTrim ||
+        widget.autoFormat != oldWidget.autoFormat ||
+        widget.errorBuilder != oldWidget.errorBuilder) {
       _validate(_controller.text);
     }
   }
@@ -301,7 +380,44 @@ class _IdFieldState extends State<IdField> {
   }
 
   void _onChanged() {
-    _validate(_controller.text);
+    if (_isApplyingFormat) return;
+
+    var text = _controller.text;
+    if (widget.autoFormat) {
+      final formatted = IdFormatter.format(widget.type, text);
+      if (formatted != text) {
+        final selection = _controller.selection;
+        final baseOffset = selection.baseOffset;
+        final isAtEnd = baseOffset >= text.length;
+        final newOffset = isAtEnd
+            ? formatted.length
+            : _preserveOffset(text, formatted, baseOffset);
+
+        _isApplyingFormat = true;
+        _controller.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(
+            offset: newOffset.clamp(0, formatted.length),
+          ),
+        );
+        _isApplyingFormat = false;
+      }
+      _validate(_controller.text);
+    } else {
+      _validate(text);
+    }
+  }
+
+  int _preserveOffset(String oldText, String newText, int oldOffset) {
+    final oldUpTo = oldText.substring(0, oldOffset.clamp(0, oldText.length));
+    final alnumCount = oldUpTo.replaceAll(RegExp(r'[^A-Za-z0-9]'), '').length;
+
+    var seen = 0;
+    for (var i = 0; i < newText.length; i++) {
+      if (RegExp(r'[A-Za-z0-9]').hasMatch(newText[i])) seen++;
+      if (seen >= alnumCount) return i + 1;
+    }
+    return newText.length;
   }
 
   void _validate(String value) {
@@ -325,7 +441,14 @@ class _IdFieldState extends State<IdField> {
         );
       }
     } else {
-      newResult = IdValidator.instance.validate(type: widget.type, value: text);
+      // If autoFormat enabled, validate formatted value so UI and validation match
+      final toValidate = widget.autoFormat
+          ? IdFormatter.format(widget.type, text)
+          : text;
+      newResult = IdValidator.instance.validate(
+        type: widget.type,
+        value: toValidate,
+      );
     }
 
     // Only rebuild if result actually changed

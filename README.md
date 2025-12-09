@@ -91,7 +91,18 @@ if (!full.isValid) {
 print(full.errorMessage);
 }
 ```
+## Formatting & `autoFormat` 
 
+`id_doc_kit` now includes `IdFormatter` for UI-friendly formatting and an `autoFormat` toggle on text fields.
+
+### IdFormatter
+Use to normalize/format values consistently in UI:
+```dart
+import 'package:id_doc_kit/id_doc_kit.dart';
+
+final panFormatted = IdFormatter.format(IdDocumentType.pan, 'abcde1234f'); // ABCDE1234F
+final aadhaarFormatted = IdFormatter.format(IdDocumentType.aadhaar, '123456789012'); // 1234 5678 9012
+```
 ## 📦 Installation
 
 Add this to your `pubspec.yaml`:
