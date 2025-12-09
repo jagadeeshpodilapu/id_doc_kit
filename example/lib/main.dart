@@ -555,7 +555,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                       final firstInvalid = _messages.entries.firstWhere(
                         (e) =>
                             (_validity[e.key] ?? false) == false &&
-                            (e.value.isNotEmpty ?? false),
+                            (e.value.isNotEmpty),
                         orElse: () =>
                             MapEntry(IdDocumentType.pan, 'Please check inputs'),
                       );
