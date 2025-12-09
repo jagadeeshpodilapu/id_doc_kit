@@ -369,7 +369,7 @@ class DrivingLicenseStateValidator {
 
     // If we reach here, it's valid per comprehensive rules
     final formatted =
-        '${stateCode.padRight(2)}-${rtoStr.padLeft(2, '0')}-${yearStr}-${serialStr}';
+        '${stateCode.padRight(2)}-${rtoStr.padLeft(2, '0')}-$yearStr-$serialStr';
 
     return DLValidationResult(
       isValid: true,
@@ -398,7 +398,7 @@ class DrivingLicenseStateValidator {
     final r = match.group(2)!;
     final y = match.group(3)!;
     final sn = match.group(4)!;
-    return '${s.padRight(2)}-${r.padLeft(2, '0')}-${y}-${sn}';
+    return '${s.padRight(2)}-${r.padLeft(2, '0')}-$y-$sn';
   }
 
   /// Return active state/UT list by default
@@ -463,7 +463,7 @@ class DrivingLicenseValidator extends BaseIdValidator {
       final year = m.group(3)!;
       final serial = m.group(4)!;
       final formatted =
-          '${sCode.padRight(2)}-${rto.padLeft(2, '0')}-${year}-${serial}';
+          '${sCode.padRight(2)}-${rto.padLeft(2, '0')}-$year-$serial';
 
       return IdDocumentResult(
         type: IdDocumentType.drivingLicense,
