@@ -98,5 +98,5 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  id_doc_kit: ^0.0.4
+  id_doc_kit: ^0.0.8
 ```

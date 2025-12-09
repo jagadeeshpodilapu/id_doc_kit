@@ -1,4 +1,4 @@
-## 0.0.7 - Dl improvements
+## 0.0.8 - Dl improvements
 
 ### Added
 - Driving License: state-aware validator (`DrivingLicenseStateValidator`) with per-state checks and flexible normalization.
