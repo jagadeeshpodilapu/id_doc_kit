@@ -23,6 +23,11 @@ The demo showcases all supported document types with real-time validation feedba
 - ✅ **GSTIN** (basic structure + state code)
 - ✅ **Voter ID (EPIC)** — 2–3 letters + 7 digits
 - ✅ **Passport (Indian)** — 1 letter + 7 digits
+- ✅ **Phone number** (India)
+- ✅ **PIN code** (India)
+- ✅ **Email** (basic format)
+
+
 
 This makes `id_doc_kit` one of the most complete, developer-friendly **Indian document validation** packages on pub.dev.
 
@@ -54,6 +59,38 @@ This makes `id_doc_kit` one of the most complete, developer-friendly **Indian do
 - 🧪 **Well-tested & null-safe**
 
 ---
+We validate driving licenses using a two-step approach:
+
+1. **Comprehensive state-aware validation** (`DrivingLicenseStateValidator`)
+  - Validates: state code, RTO, year (1988..currentYear+1), serial.
+  - Options: `requiredState`, `strictMode`, `allowLegacyCodes`.
+
+2. **Fallback permissive validation**
+  - Applies a looser format (SS + RTO + YYYY + serial) only if comprehensive validation fails.
+  - **Important:** fallback also validates the parsed year and serial to avoid false positives (error codes: `DL_FALLBACK_YEAR_INVALID`, `DL_FALLBACK_SERIAL_INVALID`).
+
+Usage examples:
+
+```dart
+// Simple: package-level validator
+final res = IdValidator.instance.validate(IdDocumentType.drivingLicense, 'KA0120210001234');
+if (res.isValid) {
+print('Normalized: ${res.normalizedValue}');
+} else {
+// show UI-friendly message
+print(res.friendlyMessage);
+}
+
+// Strict mode (server-side)
+final full = DrivingLicenseStateValidator.validate(
+'OR0120150001234',
+strictMode: true,
+allowLegacyCodes: false,
+);
+if (!full.isValid) {
+print(full.errorMessage);
+}
+```
 
 ## 📦 Installation
 

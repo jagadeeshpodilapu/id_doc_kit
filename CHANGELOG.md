@@ -1,3 +1,16 @@
+## 0.0.7 - Dl improvements
+
+### Added
+- Driving License: state-aware validator (`DrivingLicenseStateValidator`) with per-state checks and flexible normalization.
+- Driving License: permissive fallback format now validates the parsed year and serial before accepting.
+
+### Changed
+- `id_doc_kit_ui_extension` updated to include user-friendly messages for all id's.
+- Tests: Added comprehensive unit tests for driving license validation (comprehensive + fallback + strict legacy checks).
+
+### Notes
+- Driving License changes improve accuracy and reduce false positives. For high-assurance KYC, enable strict mode or require `requiredState` in server-side validation.
+
 ## 0.0.6 — KYC Essentials
 
 - ✅ Added PIN code validator (India)

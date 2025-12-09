@@ -33,7 +33,88 @@ class ExampleHome extends StatefulWidget {
 
 class _ExampleHomeState extends State<ExampleHome> {
   final _formKey = GlobalKey<FormState>();
-  bool _panValid = false;
+
+  // Controllers for fields we want to inspect directly
+  final TextEditingController _panController = TextEditingController();
+  final TextEditingController _gstinController = TextEditingController();
+  final TextEditingController _aadhaarController = TextEditingController();
+  final TextEditingController _dlController = TextEditingController();
+  final TextEditingController _voterController = TextEditingController();
+  final TextEditingController _passportController = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  // Map to hold latest friendly message per document type
+  final Map<IdDocumentType, String> _messages = {};
+
+  // Map to hold latest validity boolean per doc type (optional)
+  final Map<IdDocumentType, bool> _validity = {};
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize listeners to compute friendly messages in real-time
+    _panController.addListener(
+      () => _computeMessage(IdDocumentType.pan, _panController.text),
+    );
+    _gstinController.addListener(
+      () => _computeMessage(IdDocumentType.gstin, _gstinController.text),
+    );
+    _aadhaarController.addListener(
+      () => _computeMessage(IdDocumentType.aadhaar, _aadhaarController.text),
+    );
+    _dlController.addListener(
+      () => _computeMessage(IdDocumentType.drivingLicense, _dlController.text),
+    );
+    _voterController.addListener(
+      () => _computeMessage(IdDocumentType.voterId, _voterController.text),
+    );
+    _passportController.addListener(
+      () => _computeMessage(IdDocumentType.passport, _passportController.text),
+    );
+    _pinController.addListener(
+      () => _computeMessage(IdDocumentType.pinCode, _pinController.text),
+    );
+    _phoneController.addListener(
+      () => _computeMessage(IdDocumentType.phone, _phoneController.text),
+    );
+    _emailController.addListener(
+      () => _computeMessage(IdDocumentType.email, _emailController.text),
+    );
+  }
+
+  @override
+  void dispose() {
+    _panController.dispose();
+    _gstinController.dispose();
+    _aadhaarController.dispose();
+    _dlController.dispose();
+    _voterController.dispose();
+    _passportController.dispose();
+    _pinController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _computeMessage(IdDocumentType type, String value) {
+    // Avoid heavy work for empty values
+    if (value.trim().isEmpty) {
+      setState(() {
+        _messages[type] = '';
+        _validity[type] = false;
+      });
+      return;
+    }
+
+    final result = IdValidator.instance.validate(type: type, value: value);
+    setState(() {
+      _messages[type] = result.friendlyMessage;
+      _validity[type] = result.isValid;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,18 +183,18 @@ class _ExampleHomeState extends State<ExampleHome> {
               ),
               const SizedBox(height: 24),
 
-              // Section 1: Quick Integration
+              // Section 1: Quick Integration (PAN) - Using TextFormField + friendlyMessage
               _buildSectionCard(
                 context,
                 title: 'Quick Integration',
-                subtitle: 'IdTextField Widget',
+                subtitle: 'TextFormField + UI messages',
                 icon: Icons.flash_on,
                 iconColor: Colors.amber,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IdTextField(
-                      type: IdDocumentType.pan,
+                    TextFormField(
+                      controller: _panController,
                       decoration: InputDecoration(
                         labelText: 'PAN Number',
                         hintText: 'ABCDE1234F',
@@ -124,22 +205,28 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {
-                        setState(() => _panValid = isValid);
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.pan,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
                       },
                     ),
                     const SizedBox(height: 8),
                     _buildValidationStatus(
                       context,
-                      isValid: _panValid,
-                      message: _panValid ? 'PAN is valid' : 'Enter a valid PAN',
+                      type: IdDocumentType.pan,
+                      message: _messages[IdDocumentType.pan] ?? '',
+                      isValid: _validity[IdDocumentType.pan] ?? false,
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
 
-              // Section 2: Custom Field with Validator
+              // Section 2: Custom Field with Validator (GSTIN) - show friendly messages
               _buildSectionCard(
                 context,
                 title: 'Custom Field',
@@ -150,6 +237,7 @@ class _ExampleHomeState extends State<ExampleHome> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
+                      controller: _gstinController,
                       decoration: InputDecoration(
                         labelText: 'GSTIN Number',
                         hintText: '27AAAAA0000A1Z5',
@@ -160,11 +248,22 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      validator: idFormFieldValidator(
-                        IdDocumentType.gstin,
-                        requiredMessage: 'GSTIN is required',
-                      ),
-                      onChanged: (value) {},
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.gstin,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
+                      },
+                      onChanged: (v) {},
+                    ),
+                    const SizedBox(height: 8),
+                    _buildValidationStatus(
+                      context,
+                      type: IdDocumentType.gstin,
+                      message: _messages[IdDocumentType.gstin] ?? '',
+                      isValid: _validity[IdDocumentType.gstin] ?? false,
                     ),
                   ],
                 ),
@@ -172,7 +271,7 @@ class _ExampleHomeState extends State<ExampleHome> {
 
               const SizedBox(height: 16),
 
-              // Section 3: Advanced Custom UI
+              // Section 3: Advanced Custom UI (Aadhaar)
               _buildSectionCard(
                 context,
                 title: 'Advanced Custom UI',
@@ -182,10 +281,13 @@ class _ExampleHomeState extends State<ExampleHome> {
                 child: IdField(
                   type: IdDocumentType.aadhaar,
                   requiredMessage: 'Aadhaar is required',
+                  controller:
+                      _aadhaarController, // if your IdField supports controller
                   builder: (context, controller, result) {
                     final isValid = result?.isValid ?? false;
                     final errorText = (result != null && !result.isValid)
-                        ? result.errorMessage
+                        ? result
+                              .friendlyMessage // use friendly message here
                         : null;
 
                     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -219,10 +321,9 @@ class _ExampleHomeState extends State<ExampleHome> {
                         const SizedBox(height: 8),
                         _buildValidationStatus(
                           context,
-                          isValid: isValid,
-                          message: isValid
-                              ? 'Aadhaar is valid'
-                              : 'Enter a valid Aadhaar',
+                          type: IdDocumentType.aadhaar,
+                          message: _messages[IdDocumentType.aadhaar] ?? '',
+                          isValid: _validity[IdDocumentType.aadhaar] ?? false,
                         ),
                       ],
                     );
@@ -231,7 +332,7 @@ class _ExampleHomeState extends State<ExampleHome> {
               ),
               const SizedBox(height: 16),
 
-              // Section 4: Other Documents
+              // Section 4: Other Documents (using IdTextField and onChanged to compute messages)
               _buildSectionCard(
                 context,
                 title: 'Other Documents',
@@ -240,8 +341,11 @@ class _ExampleHomeState extends State<ExampleHome> {
                 iconColor: Colors.indigo,
                 child: Column(
                   children: [
+                    // Voter ID
                     IdTextField(
                       type: IdDocumentType.voterId,
+                      controller:
+                          _voterController, // if IdTextField supports controller
                       decoration: InputDecoration(
                         labelText: 'Voter ID',
                         prefixIcon: const Icon(Icons.how_to_vote),
@@ -251,11 +355,25 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      onValidationChanged: (isValid) {
+                        // validation boolean -> compute full result for message
+                        final res = IdValidator.instance.validate(
+                          type: IdDocumentType.voterId,
+                          value: _voterController.text,
+                        );
+                        setState(() {
+                          _messages[IdDocumentType.voterId] =
+                              res.friendlyMessage;
+                          _validity[IdDocumentType.voterId] = res.isValid;
+                        });
+                      },
                     ),
                     const SizedBox(height: 12),
+
+                    // Passport
                     IdTextField(
                       type: IdDocumentType.passport,
+                      controller: _passportController,
                       decoration: InputDecoration(
                         labelText: 'Passport Number',
                         prefixIcon: const Icon(Icons.airplane_ticket),
@@ -265,11 +383,23 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      onValidationChanged: (isValid) {
+                        final res = IdValidator.instance.validate(
+                          type: IdDocumentType.passport,
+                          value: _passportController.text,
+                        );
+                        setState(() {
+                          _messages[IdDocumentType.passport] =
+                              res.friendlyMessage;
+                          _validity[IdDocumentType.passport] = res.isValid;
+                        });
+                      },
                     ),
                     const SizedBox(height: 12),
-                    IdTextField(
-                      type: IdDocumentType.drivingLicense,
+
+                    // Driving License (manual input)
+                    TextFormField(
+                      controller: _dlController,
                       decoration: InputDecoration(
                         labelText: 'Driving License',
                         prefixIcon: const Icon(Icons.drive_eta),
@@ -279,11 +409,28 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.drivingLicense,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _buildValidationStatus(
+                      context,
+                      type: IdDocumentType.drivingLicense,
+                      message: _messages[IdDocumentType.drivingLicense] ?? '',
+                      isValid:
+                          _validity[IdDocumentType.drivingLicense] ?? false,
                     ),
                     const SizedBox(height: 12),
-                    IdTextField(
-                      type: IdDocumentType.pinCode,
+
+                    // PIN Code
+                    TextFormField(
+                      controller: _pinController,
                       decoration: InputDecoration(
                         labelText: 'Pin Code',
                         prefixIcon: const Icon(Icons.pin_drop_outlined),
@@ -293,11 +440,27 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.pinCode,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _buildValidationStatus(
+                      context,
+                      type: IdDocumentType.pinCode,
+                      message: _messages[IdDocumentType.pinCode] ?? '',
+                      isValid: _validity[IdDocumentType.pinCode] ?? false,
                     ),
                     const SizedBox(height: 12),
-                    IdTextField(
-                      type: IdDocumentType.phone,
+
+                    // Phone Number
+                    TextFormField(
+                      controller: _phoneController,
                       decoration: InputDecoration(
                         labelText: 'Phone Number',
                         prefixIcon: const Icon(Icons.mobile_friendly),
@@ -307,11 +470,27 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.phone,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _buildValidationStatus(
+                      context,
+                      type: IdDocumentType.phone,
+                      message: _messages[IdDocumentType.phone] ?? '',
+                      isValid: _validity[IdDocumentType.phone] ?? false,
                     ),
                     const SizedBox(height: 12),
-                    IdTextField(
-                      type: IdDocumentType.email,
+
+                    // Email
+                    TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email Address',
                         prefixIcon: const Icon(Icons.email_outlined),
@@ -321,7 +500,21 @@ class _ExampleHomeState extends State<ExampleHome> {
                         filled: true,
                         fillColor: colorScheme.surface,
                       ),
-                      onValidationChanged: (isValid) {},
+                      validator: (value) {
+                        final v = value ?? '';
+                        final r = IdValidator.instance.validate(
+                          type: IdDocumentType.email,
+                          value: v,
+                        );
+                        return r.isValid ? null : r.friendlyMessage;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    _buildValidationStatus(
+                      context,
+                      type: IdDocumentType.email,
+                      message: _messages[IdDocumentType.email] ?? '',
+                      isValid: _validity[IdDocumentType.email] ?? false,
                     ),
                   ],
                 ),
@@ -334,17 +527,51 @@ class _ExampleHomeState extends State<ExampleHome> {
                 height: 56,
                 child: FilledButton.icon(
                   onPressed: () {
+                    // compute final messages (in case controllers changed but listeners didn't fire)
+                    _computeAllMessages();
+
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: const Row(
+                          content: Row(
                             children: [
-                              Icon(Icons.check_circle, color: Colors.white),
-                              SizedBox(width: 8),
-                              Text('All inputs are valid!'),
+                              const Icon(
+                                Icons.check_circle,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text('All inputs are valid!')),
                             ],
                           ),
                           backgroundColor: Colors.green.shade600,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Show first invalid message
+                      final firstInvalid = _messages.entries.firstWhere(
+                        (e) =>
+                            (_validity[e.key] ?? false) == false &&
+                            (e.value?.isNotEmpty ?? false),
+                        orElse: () =>
+                            MapEntry(IdDocumentType.pan, 'Please check inputs'),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(child: Text(firstInvalid.value)),
+                            ],
+                          ),
+                          backgroundColor: Colors.orange.shade700,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -371,6 +598,18 @@ class _ExampleHomeState extends State<ExampleHome> {
         ),
       ),
     );
+  }
+
+  void _computeAllMessages() {
+    _computeMessage(IdDocumentType.pan, _panController.text);
+    _computeMessage(IdDocumentType.gstin, _gstinController.text);
+    _computeMessage(IdDocumentType.aadhaar, _aadhaarController.text);
+    _computeMessage(IdDocumentType.drivingLicense, _dlController.text);
+    _computeMessage(IdDocumentType.voterId, _voterController.text);
+    _computeMessage(IdDocumentType.passport, _passportController.text);
+    _computeMessage(IdDocumentType.pinCode, _pinController.text);
+    _computeMessage(IdDocumentType.phone, _phoneController.text);
+    _computeMessage(IdDocumentType.email, _emailController.text);
   }
 
   Widget _buildSectionCard(
@@ -432,23 +671,29 @@ class _ExampleHomeState extends State<ExampleHome> {
 
   Widget _buildValidationStatus(
     BuildContext context, {
-    required bool isValid,
+    required IdDocumentType type,
     required String message,
+    required bool isValid,
   }) {
+    final color = isValid ? Colors.green.shade600 : Colors.red.shade600;
     return Row(
       children: [
         Icon(
           isValid ? Icons.check_circle : Icons.error_outline,
           size: 16,
-          color: isValid ? Colors.green.shade600 : Colors.orange.shade600,
+          color: color,
         ),
         const SizedBox(width: 6),
-        Text(
-          message,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: isValid ? Colors.green.shade600 : Colors.orange.shade600,
+        Expanded(
+          child: Text(
+            message.isEmpty
+                ? (isValid ? 'Looks good' : 'Not validated yet')
+                : message,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
           ),
         ),
       ],
