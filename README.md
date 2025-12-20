@@ -1,11 +1,8 @@
 # id_doc_kit
 
-A lightweight, production-ready Flutter/Dart toolkit for validating  
-**Indian ID documents** with structured results and flexible form field support.
+A lightweight, production-ready Flutter/Dart package for validating Indian ID documents used in KYC, onboarding, and fintech workflows.
 
-Perfect for **KYC, onboarding, fintech, business verification, and identity apps**.
-
----
+## Built with a strict core architecture, structured results, and UI-friendly helpers.
 
 ## 🚀 Live Demo
 
@@ -15,19 +12,25 @@ The demo showcases all supported document types with real-time validation feedba
 
 ---
 
-## ✅ Supported Documents
+## ✨ Supported Documents
 
-- ✅ **Aadhaar** (with Verhoeff checksum)
-- ✅ **PAN**
-- ✅ **Driving License** (basic format)
-- ✅ **GSTIN** (basic structure + state code)
-- ✅ **Voter ID (EPIC)** — 2–3 letters + 7 digits
-- ✅ **Passport (Indian)** — 1 letter + 7 digits
-- ✅ **Phone number** (India)
-- ✅ **PIN code** (India)
-- ✅ **Email** (basic format)
+✅ Aadhaar
 
+✅ PAN
 
+✅ GSTIN
+
+✅ Driving License (strict + fallback)
+
+✅ Voter ID (EPIC)
+
+✅ Passport
+
+✅ PIN Code (India)
+
+✅ Phone Number (India)
+
+✅ Email
 
 This makes `id_doc_kit` one of the most complete, developer-friendly **Indian document validation** packages on pub.dev.
 
@@ -35,74 +38,141 @@ This makes `id_doc_kit` one of the most complete, developer-friendly **Indian do
 
 ## ✨ Key Features
 
-- ✅ **Structured validation results**
+- ✅ Structured Validation Results:
 
-  - `isValid`
-  - `normalizedValue`
-  - `errorCode` (e.g. `INVALID_FORMAT`, `INVALID_LENGTH`, `INVALID_CHECKSUM`)
-  - `errorMessage` (human-friendly)
+```dart
+IdDocumentResult {
+  type,
+  rawValue,
+  normalizedValue,
+  isValid,
+  errorCode,
+  errorMessage,
+  confidence,
+  meta
+}
+```
 
-- ✅ **Single unified validator API**
+### 🧠 Confidence Score (NEW)
 
-  - `IdValidator.instance.validate(type: ..., value: ...)`
-  - `IdValidator.instance.validateAuto(value)` _(optional)_
-
-- ✅ **Three flexible ways to handle input fields**
-
-  - `idFormFieldValidator` → logic only
-  - `IdTextField` → ready-to-use widget
-  - `IdField` → fully custom UI via builder
-
-- 🔄 **Consistent behavior** across Aadhaar, PAN, DL, GSTIN, Voter ID, Passport
-- 🚫 **No external APIs** (offline, fast, privacy-safe)
-- 🌐 **Works on Android, iOS, Web**
-- 🧪 **Well-tested & null-safe**
+Each validation result includes a confidence score (0.0 → 1.0) indicating structural certainty.
 
 ---
-We validate driving licenses using a two-step approach:
 
-1. **Comprehensive state-aware validation** (`DrivingLicenseStateValidator`)
-  - Validates: state code, RTO, year (1988..currentYear+1), serial.
-  - Options: `requiredState`, `strictMode`, `allowLegacyCodes`.
+| Scenario                                                 | Confidence   |
+| -------------------------------------------------------- | ------------ |
+| Strict deterministic validation (PAN, Aadhaar, Passport) | `1.0`        |
+| Strong structure, no checksum (GSTIN, Phone, Email, PIN) | `0.9 – 0.95` |
+| Driving License fallback validation                      | `0.6`        |
+| Invalid                                                  | `0.0`        |
 
-2. **Fallback permissive validation**
-  - Applies a looser format (SS + RTO + YYYY + serial) only if comprehensive validation fails.
-  - **Important:** fallback also validates the parsed year and serial to avoid false positives (error codes: `DL_FALLBACK_YEAR_INVALID`, `DL_FALLBACK_SERIAL_INVALID`).
+## ⚠️ Important:
 
-Usage examples:
+Confidence represents structural validation only. This package does NOT verify documents against government databases.
+
+---
+
+### 🧩 Metadata (meta) for Advanced Use Cases
+
+Validators expose parsed data via the meta field.
+
+Example (Driving License):
+
+```json
+meta: {
+  "stateCode": "KA",
+  "stateName": "Karnataka",
+  "rto": "01",
+  "year": 2021,
+  "serial": "0001234",
+  "isLegacy": false,
+  "isFallback": false
+}
+```
+
+### 🪪 Driving License Validation (Important)
+
+Driving Licenses are validated in two stages:
+
+**1️⃣ Strict Validation (Preferred)**
+
+- Validates state/UT code
+- RTO range
+- Year bounds
+- Legacy handling
+- Returns confidence = 1.0
+
+**2️⃣ Fallback Validation**
+
+- Structural format match only
+- Used when strict validation fails
+- Returns confidence = 0.6
+- Clearly marked via meta.isFallback = true
+
+This ensures maximum compatibility with real-world data while maintaining transparency.
+
+### 🧪 Example Usage
 
 ```dart
-// Simple: package-level validator
-final res = IdValidator.instance.validate(IdDocumentType.drivingLicense, 'KA0120210001234');
-if (res.isValid) {
-print('Normalized: ${res.normalizedValue}');
-} else {
-// show UI-friendly message
-print(res.friendlyMessage);
-}
-
-// Strict mode (server-side)
-final full = DrivingLicenseStateValidator.validate(
-'OR0120150001234',
-strictMode: true,
-allowLegacyCodes: false,
+final result = IdValidator.instance.validate(
+  type: IdDocumentType.pan,
+  value: 'ABCDE1234F',
 );
-if (!full.isValid) {
-print(full.errorMessage);
+
+if (result.isValid && result.confidence >= 0.9) {
+  // Safe to proceed
 }
 ```
-## Formatting & `autoFormat` 
 
-`id_doc_kit` now includes `IdFormatter` for UI-friendly formatting and an `autoFormat` toggle on text fields.
+### 🎨 UI-Friendly Widgets
 
-### IdFormatter
-Use to normalize/format values consistently in UI:
+**Quick integration:**
+
 ```dart
-import 'package:id_doc_kit/id_doc_kit.dart';
-
-final panFormatted = IdFormatter.format(IdDocumentType.pan, 'abcde1234f'); // ABCDE1234F
-final aadhaarFormatted = IdFormatter.format(IdDocumentType.aadhaar, '123456789012'); // 1234 5678 9012
+IdTextField(
+  type: IdDocumentType.pan,
+  onValidationChanged: (isValid) {},
+);
 ```
+
+**Full control:**
+
+```dart
+IdField(
+  type: IdDocumentType.aadhaar,
+  builder: (context, controller, result) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        errorText: result?.errorMessage,
+      ),
+    );
+  },
+);
+```
+
+### 🧠 Design Principles
+
+- No standalone functions
+- Single validation entry point
+- Strict base architecture
+- No backend calls
+- No UI assumptions
+- Fully testable
+
+### 📌 Use Cases
+
+- KYC onboarding
+- Fintech apps
+- Identity verification
+- Form validation
+- Government document input
+
+### 🔐 Disclaimer
+
+This package performs format and structural validation only.
+It does not confirm document ownership or authenticity with issuing authorities.
+
 ## 📦 Installation
 
 Add this to your `pubspec.yaml`:

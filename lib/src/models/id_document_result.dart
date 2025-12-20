@@ -5,8 +5,10 @@ class IdDocumentResult {
   final String rawValue;
   final bool isValid;
   final String? normalizedValue;
-  final String? errorCode; // e.g. "INVALID_FORMAT", "INVALID_CHECKSUM"
-  final String? errorMessage; // human friendly
+  final String? errorCode;
+  final String? errorMessage;
+  final double confidence;
+  final Map<String, dynamic>? metadata;
 
   const IdDocumentResult({
     required this.type,
@@ -15,12 +17,14 @@ class IdDocumentResult {
     this.normalizedValue,
     this.errorCode,
     this.errorMessage,
+    this.confidence = 0.0,
+    this.metadata,
   });
 
   @override
   String toString() {
     return 'IdDocumentResult(type: $type, rawValue: $rawValue, '
         'isValid: $isValid, normalizedValue: $normalizedValue, '
-        'errorCode: $errorCode, errorMessage: $errorMessage)';
+        'errorCode: $errorCode, errorMessage: $errorMessage, confidence: $confidence, metadata: $metadata)';
   }
 }

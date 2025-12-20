@@ -9,41 +9,40 @@ class VoterIdValidator extends BaseIdValidator {
   @override
   IdDocumentResult validate(String input) {
     final raw = input;
+
     var normalized = normalize(input).toUpperCase();
     normalized = normalized.replaceAll(RegExp(r'\s+'), '');
 
     if (normalized.isEmpty) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+      return failure(
+        raw,
         errorCode: 'REQUIRED',
         errorMessage: 'Voter ID is required.',
       );
     }
 
-    // Accept both common formats:
-    // 3 letters + 7 digits => ABC1234567
-    // 2 letters + 7 digits => AB1234567
-    final regex3 = RegExp(r'^[A-Z]{3}[0-9]{7}$');
-    final regex2 = RegExp(r'^[A-Z]{2}[0-9]{7}$');
+    // EPIC formats:
+    // - 2 letters + 7 digits
+    // - 3 letters + 7 digits
+    final isValidFormat =
+        RegExp(r'^[A-Z]{2}[0-9]{7}$').hasMatch(normalized) ||
+        RegExp(r'^[A-Z]{3}[0-9]{7}$').hasMatch(normalized);
 
-    if (!regex3.hasMatch(normalized) && !regex2.hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+    if (!isValidFormat) {
+      return failure(
+        raw,
         errorCode: 'INVALID_FORMAT',
         errorMessage:
             'Voter ID must be 2–3 letters followed by 7 digits (e.g. ABC1234567).',
       );
     }
 
-    return IdDocumentResult(
-      type: type,
-      rawValue: raw,
-      isValid: true,
+    // SUCCESS — deterministic format → confidence = 1.0
+    return success(
+      raw,
       normalizedValue: normalized,
+      confidence: 1.0,
+      meta: {'country': 'IN'},
     );
   }
 }

@@ -9,38 +9,34 @@ class PassportValidator extends BaseIdValidator {
   @override
   IdDocumentResult validate(String input) {
     final raw = input;
+
     var normalized = normalize(input).toUpperCase();
     normalized = normalized.replaceAll(RegExp(r'\s+'), '');
 
     if (normalized.isEmpty) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+      return failure(
+        raw,
         errorCode: 'REQUIRED',
         errorMessage: 'Passport number is required.',
       );
     }
 
-    // Common Indian passport format: 1 letter + 7 digits.
-    // Use a conservative regex: first letter A-PR-WY (skipping some rarely-used letters)
-    final regex = RegExp(r'^[A-PR-WY][0-9]{7}$');
-
-    if (!regex.hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+    // Indian passport format: 1 letter + 7 digits
+    // Conservative range used
+    if (!RegExp(r'^[A-PR-WY][0-9]{7}$').hasMatch(normalized)) {
+      return failure(
+        raw,
         errorCode: 'INVALID_FORMAT',
         errorMessage: 'Passport format is invalid (e.g. A1234567).',
       );
     }
 
-    return IdDocumentResult(
-      type: type,
-      rawValue: raw,
-      isValid: true,
+    // SUCCESS — deterministic format → confidence = 1.0
+    return success(
+      raw,
       normalizedValue: normalized,
+      confidence: 1.0,
+      meta: {'country': 'IN'},
     );
   }
 }

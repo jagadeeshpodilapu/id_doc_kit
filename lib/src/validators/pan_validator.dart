@@ -8,26 +8,25 @@ class PanValidator extends BaseIdValidator {
 
   @override
   IdDocumentResult validate(String input) {
-    final raw = input;
-    var normalized = normalize(input).toUpperCase();
+    final normalized = normalize(input);
 
-    final regex = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$');
-
-    if (!regex.hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
-        errorCode: 'INVALID_FORMAT',
-        errorMessage: 'PAN must be in the format AAAAA9999A.',
+    if (!_panRegex.hasMatch(normalized)) {
+      return failure(
+        input,
+        errorCode: 'PAN_INVALID',
+        errorMessage: 'Invalid PAN format',
       );
     }
 
-    return IdDocumentResult(
-      type: type,
-      rawValue: raw,
-      isValid: true,
+    return success(
+      input,
       normalizedValue: normalized,
+      confidence: 1.0,
+      meta: {
+        'prefix': normalized.substring(0, 5),
+        'number': normalized.substring(5, 9),
+        'suffix': normalized.substring(9),
+      },
     );
   }
 }

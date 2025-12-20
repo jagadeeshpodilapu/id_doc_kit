@@ -9,36 +9,35 @@ class EmailValidator extends BaseIdValidator {
   @override
   IdDocumentResult validate(String input) {
     final raw = input;
-    var normalized = normalize(input).trim().toLowerCase();
+    final normalized = normalize(input).toLowerCase();
 
     if (normalized.isEmpty) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+      return failure(
+        raw,
         errorCode: 'REQUIRED',
         errorMessage: 'Email is required.',
       );
     }
 
-    // Practical, not-overly-strict regex used commonly
+    // Practical (not overly strict) email regex
     final regex = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
 
     if (!regex.hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
+      return failure(
+        raw,
         errorCode: 'INVALID_FORMAT',
         errorMessage: 'Enter a valid email address.',
       );
     }
 
-    return IdDocumentResult(
-      type: type,
-      rawValue: raw,
-      isValid: true,
+    final domain = normalized.split('@').last;
+
+    // SUCCESS — no checksum → confidence < 1.0
+    return success(
+      raw,
       normalizedValue: normalized,
+      confidence: 0.9,
+      meta: {'domain': domain},
     );
   }
 }

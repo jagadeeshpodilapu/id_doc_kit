@@ -427,64 +427,64 @@ class DrivingLicenseValidator extends BaseIdValidator {
   @override
   IdDocumentType get type => IdDocumentType.drivingLicense;
 
-  DrivingLicenseValidator();
-
   @override
   IdDocumentResult validate(String input) {
     final raw = input;
     final normalized = _normalize(raw);
 
-    // 1) Run comprehensive validator first
-    final full = DrivingLicenseStateValidator.validate(
-      normalized,
-      // defaults: strictMode=false, allowLegacyCodes=true
-    );
+    // 1️⃣ Comprehensive validation
+    final full = DrivingLicenseStateValidator.validate(normalized);
 
     if (full.isValid) {
-      // Map DLValidationResult -> IdDocumentResult (valid)
-      return IdDocumentResult(
-        type: IdDocumentType.drivingLicense,
-        rawValue: raw,
+      return success(
+        raw,
         normalizedValue: full.formattedDL ?? normalized,
-        isValid: true,
-        errorCode: null,
-        errorMessage: null,
+        confidence: 1.0,
+        meta: {
+          'stateCode': full.stateCode,
+          'stateName': full.stateName,
+          'rto': full.rtoCode,
+          'year': full.year,
+          'serial': full.serialNumber,
+          'isLegacy': full.isLegacyCode ?? false,
+          'isFallback': false,
+        },
       );
     }
 
-    // 2) If comprehensive failed, try permissive fallback
-    // Fallback pattern: 2 letters, 1-2 digits, 4-digit year, 4-8 digit serial
+    // 2️⃣ Fallback validation (permissive)
     final fallbackRegex = RegExp(r'^([A-Z]{2})(\d{1,2})(\d{4})(\d{4,8})$');
     final m = fallbackRegex.firstMatch(normalized);
 
     if (m != null) {
-      final sCode = m.group(1)!;
+      final stateCode = m.group(1)!;
       final rto = m.group(2)!;
-      final year = m.group(3)!;
+      final year = int.tryParse(m.group(3)!);
       final serial = m.group(4)!;
-      final formatted =
-          '${sCode.padRight(2)}-${rto.padLeft(2, '0')}-$year-$serial';
 
-      return IdDocumentResult(
-        type: IdDocumentType.drivingLicense,
-        rawValue: raw,
+      final formatted =
+          '${stateCode.padRight(2)}-${rto.padLeft(2, '0')}-${m.group(3)}-$serial';
+
+      return success(
+        raw,
         normalizedValue: formatted,
-        isValid: true,
-        errorCode: 'DL_VALID_FALLBACK',
-        errorMessage:
-            'Validated via fallback permissive format. Comprehensive validation failed: ${full.errorMessage ?? 'unknown'}',
+        confidence: 0.6,
+        meta: {
+          'stateCode': stateCode,
+          'rto': rto,
+          'year': year,
+          'serial': serial,
+          'isFallback': true,
+        },
       );
     }
 
-    // 3) Both failed -> invalid
-    return IdDocumentResult(
-      type: IdDocumentType.drivingLicense,
-      rawValue: raw,
-      normalizedValue: null,
-      isValid: false,
+    // 3️⃣ Invalid
+    return failure(
+      raw,
       errorCode: full.errorCode ?? 'DL_INVALID',
-      errorMessage:
-          'Comprehensive validation failed: ${full.errorMessage ?? 'Invalid DL'}; fallback format check also failed.',
+      errorMessage: 'Invalid driving license format. ${full.errorMessage ?? ''}'
+          .trim(),
     );
   }
 

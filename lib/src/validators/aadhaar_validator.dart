@@ -8,45 +8,21 @@ class AadhaarValidator extends BaseIdValidator {
 
   @override
   IdDocumentResult validate(String input) {
-    final raw = input;
-    final normalized = normalize(input).replaceAll(RegExp(r'\s+'), '');
+    final normalized = normalize(input);
 
-    if (!RegExp(r'^\d{12}$').hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
-        errorCode: 'INVALID_FORMAT',
-        errorMessage: 'Aadhaar must be exactly 12 digits.',
+    if (!_isValidChecksum(normalized)) {
+      return failure(
+        input,
+        errorCode: 'AADHAAR_CHECKSUM_INVALID',
+        errorMessage: 'Invalid Aadhaar number',
       );
     }
 
-    // Reject if all digits are same (e.g. 0000... or 1111...)
-    if (RegExp(r'^(\d)\1{11}$').hasMatch(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
-        errorCode: 'INVALID_PATTERN',
-        errorMessage: 'Aadhaar appears to be a repeated digit.',
-      );
-    }
-
-    if (!_verhoeffValidate(normalized)) {
-      return IdDocumentResult(
-        type: type,
-        rawValue: raw,
-        isValid: false,
-        errorCode: 'INVALID_CHECKSUM',
-        errorMessage: 'Aadhaar checksum is invalid.',
-      );
-    }
-
-    return IdDocumentResult(
-      type: type,
-      rawValue: raw,
-      isValid: true,
+    return success(
+      input,
       normalizedValue: normalized,
+      confidence: 1.0,
+      meta: {'last4': normalized.substring(8)},
     );
   }
 
