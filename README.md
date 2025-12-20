@@ -173,11 +173,16 @@ IdField(
 This package performs format and structural validation only.
 It does not confirm document ownership or authenticity with issuing authorities.
 
-## 📦 Installation
+## ☕ Support & Sponsorship
 
-Add this to your `pubspec.yaml`:
+If `id_doc_kit` saves you development time or helps in production,
+consider supporting its development.
 
-```yaml
-dependencies:
-  id_doc_kit: ^0.0.8
-```
+<a href="https://buymeacoffee.com/jagadeesh" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="41" alt="Buy Me a Coffee">
+</a>
+
+Your support helps maintain accuracy, documentation, and long-term maintenance.
+
+
+
