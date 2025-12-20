@@ -7,10 +7,25 @@ class AadhaarValidator extends BaseIdValidator {
   IdDocumentType get type => IdDocumentType.aadhaar;
 
   @override
+  String normalize(String input) {
+    return input.trim().replaceAll(RegExp(r'\s+'), '');
+  }
+
+  @override
   IdDocumentResult validate(String input) {
     final normalized = normalize(input);
 
-    if (!_isValidChecksum(normalized)) {
+    // Validate format: 12 digits
+    if (!RegExp(r'^\d{12}$').hasMatch(normalized)) {
+      return failure(
+        input,
+        errorCode: 'AADHAAR_INVALID_FORMAT',
+        errorMessage: 'Aadhaar must be 12 digits',
+      );
+    }
+
+    // Validate checksum using Verhoeff algorithm
+    if (!_verhoeffValidate(normalized)) {
       return failure(
         input,
         errorCode: 'AADHAAR_CHECKSUM_INVALID',

@@ -3,8 +3,15 @@ import '../models/id_document_result.dart';
 import '../models/id_document_type.dart';
 
 class PanValidator extends BaseIdValidator {
+  static final RegExp _panRegex = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$');
+
   @override
   IdDocumentType get type => IdDocumentType.pan;
+
+  @override
+  String normalize(String input) {
+    return input.trim().toUpperCase().replaceAll(RegExp(r'\s+'), '');
+  }
 
   @override
   IdDocumentResult validate(String input) {

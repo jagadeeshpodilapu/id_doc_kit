@@ -26,7 +26,7 @@ abstract class BaseIdValidator {
       rawValue: rawValue,
       normalizedValue: normalizedValue,
       isValid: true,
-      meta: meta,
+      metadata: meta,
       confidence: confidence,
     );
   }
