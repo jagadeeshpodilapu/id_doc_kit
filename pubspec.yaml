@@ -2,7 +2,7 @@ name: id_doc_kit
 description: >
   Indian ID validation helpers for KYC and onboarding (Aadhaar, PAN, GSTIN, DL, Voter ID, Passport + PIN/Phone/Email).
 
-version: 0.0.9
+version: 0.0.10
 
 homepage: https://github.com/jagadeeshpodilapu/id_doc_kit
 repository: https://github.com/jagadeeshpodilapu/id_doc_kit
